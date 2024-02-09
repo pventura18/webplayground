@@ -79,6 +79,10 @@
                       document.getElementById('content').value = '';
 
                       ScrollBottomInThread();
+
+                      if(data.first){
+                        window.location.href = "{% url 'messenger:detail' thread.pk %}";
+                      }
                     }
                   })
                 }

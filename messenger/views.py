@@ -2,11 +2,13 @@ from typing import Any
 from django.db.models.base import Model as Model
 from django.db.models.query import QuerySet
 from django.http import Http404, JsonResponse
+from django.urls import reverse_lazy
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import TemplateView
 from django.shortcuts import get_list_or_404
+from django.contrib.auth.models import User
 
 from messenger.models import Message, Thread
 
@@ -39,7 +41,15 @@ def add_message(request, pk):
             message = Message.objects.create(user=request.user, content=content)
             thread.messages.add(message)
             json_response['created'] = True
+            if len(thread.messages.all()) is 1:
+                json_response['first'] = True
+            
     else:
         raise Http404("User is not authenticated")
 
     return JsonResponse(json_response)
+
+def start_thread(request, username):
+    user = get_object_or_404(User, username=username)
+    thread = Thread.objects.find_or_create(user, request.user)
+    return redirect(reverse_lazy('messenger:detail', args=[thread.pk]))

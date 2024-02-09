@@ -8,6 +8,7 @@ class Message(models.Model):
     content = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
 
+
     class Meta:
         ordering = ['created']
 
@@ -28,8 +29,12 @@ class ThreadManager(models.Manager):
 class Thread(models.Model):
     users = models.ManyToManyField(User, related_name='threads')
     messages = models.ManyToManyField(Message)
+    updated = models.DateTimeField(auto_now=True)
 
     objects = ThreadManager()
+
+    class Meta:
+        ordering = ['-updated']
 
 
 
@@ -49,5 +54,8 @@ def messages_changed(sender, **kwargs):
 
     # Buscar los mensajes que no están en el hilo
     pk_set.difference_update(false_pk_set)
+
+    # Forzar la actualización del campo updated
+    instance.save()
 
 m2m_changed.connect(messages_changed, sender=Thread.messages.through)

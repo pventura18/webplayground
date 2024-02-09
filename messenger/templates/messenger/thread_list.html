@@ -13,7 +13,7 @@
           <!-- Hilos de conversación -->
           <div class="col-md-4">
             <!-- Recorremos los Threads y sólo mostramos los que tienen como mínimo 1 mensaje -->
-            {% for thread in request.user.threads.all %}
+            {% for thread in thread_list %}
               {% if thread.messages.all|length > 0 %}
                 <div class="mb-3">
                   <!-- Recorremos los miembros del hilo menos el propio request.user -->
